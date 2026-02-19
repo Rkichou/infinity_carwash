@@ -73,7 +73,7 @@ function App() {
               SYSTEM.
             </h1>
             <div className="hero-img-box">
-              <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&q=80" alt="Car" />
+              <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&q=80" alt="/public/gallery/403924050_3587710754833150_5900264034059047470_n.jpg" />
             </div>
             <div style={{position: 'absolute', bottom: '50px', left: '40px', display: 'flex', gap: '40px', alignItems: 'center'}}>
               <div style={{fontSize: '0.7rem', opacity: 0.5, letterSpacing: '2px'}}>01 / EST. 2026</div>
