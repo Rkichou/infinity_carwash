@@ -196,6 +196,33 @@ nav {
 /* --- RESPONSIVE --- */
 @media (max-width: 992px) {
   .services-grid, .booking-container { grid-template-columns: 1fr; }
-  .hero-img-box { display: none; }
-  .hero-text { font-size: 5rem; text-align: center; width: 100%; }
+  
+  .hero-img-box { 
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    width: 90vw;
+    height: 70vh;
+    opacity: 0.3; /* Réduit l'opacité pour laisser le texte lisible */
+    z-index: 1;
+    filter: grayscale(0);
+  }
+
+  .hero-text { 
+    font-size: 4.5rem; 
+    text-align: center; 
+    width: 100%; 
+    z-index: 2;
+    position: relative;
+    text-shadow: 0 0 20px rgba(0,0,0,0.8);
+  }
+
+  .container { padding: 0 20px; }
+  
+  nav {
+    width: 95%;
+    padding: 0 15px;
+  }
 }
