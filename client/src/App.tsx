@@ -126,14 +126,14 @@ function App() {
 
   useEffect(() => {
     if (view === 'admin') {
-      axios.get('http://localhost:5001/api/reservations').then(res => setReservations(res.data));
+      axios.get('/api/reservations').then(res => setReservations(res.data));
     }
   }, [view]);
 
   const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5001/api/reservations', formData);
+      await axios.post('/api/reservations', formData);
       setBookingSuccess(true);
       setTimeout(() => setBookingSuccess(false), 5000);
     } catch (err) { alert("Erreur serveur."); }
