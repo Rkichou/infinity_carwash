@@ -184,7 +184,7 @@ function App() {
             <div className="container">
               <div style={{marginBottom: '100px'}}>
                 <span style={{color: 'var(--yellow)', fontWeight: '800', letterSpacing: '4px'}}>PORTFOLIO</span>
-                <h2 style={{fontFamily: 'Bebas Neue', fontSize: '6rem', lineHeight: 1, marginBottom: '20px'}}>NOS RÉALISATIONS</h2>
+                <h2 className='titre'>NOS RÉALISATIONS</h2>
                 <p style={{color: '#666', fontSize: '1.1rem', maxWidth: '600px'}}>Découvrez nos derniers projets et la qualité de notre travail</p>
               </div>
 
@@ -217,7 +217,7 @@ function App() {
             <div className="container">
               <div style={{marginBottom: '100px'}}>
                 <span style={{color: 'var(--yellow)', fontWeight: '800', letterSpacing: '4px'}}>EXCELLENCE</span>
-                <h2 style={{fontFamily: 'Bebas Neue', fontSize: '6rem', lineHeight: 1}}>NOS FORMULES</h2>
+                <h2 className='titre'>NOS FORMULES</h2>
               </div>
 
               {/* CATEGORY TABS */}

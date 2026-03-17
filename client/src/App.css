@@ -192,9 +192,17 @@ nav {
   color: var(--yellow);
   font-weight: 800;
 }
-
+.titre {
+  font-family: 'Bebas Neue';
+   font-size: '6rem';
+    line-height: 1;
+     margin-bottom: '20px';
+}
 /* --- RESPONSIVE --- */
 @media (max-width: 992px) {
+  .titre {
+   font-size: '5rem';
+}
   .services-grid, .booking-container { grid-template-columns: 1fr; }
   
   .hero-img-box { 
@@ -233,6 +241,10 @@ nav {
     padding: 12px 24px;
     font-size: 0.85rem;
   }
+  .magnetic-btn:hover {
+  transform: none !important;
+  box-shadow: 0 20px 40px rgba(255, 222, 0, 0.2);
+}
 }
 
 /* --- CATEGORY TABS --- */
