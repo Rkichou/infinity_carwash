@@ -209,7 +209,10 @@ nav {
     z-index: 1;
     filter: grayscale(0);
   }
-
+.hero:hover .hero-img-box {
+    transform:none;
+        filter: grayscale(0);
+  }
   .hero-text { 
     font-size: 4.5rem; 
     text-align: center; 

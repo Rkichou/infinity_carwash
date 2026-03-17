@@ -146,7 +146,6 @@ function App() {
       <nav>
         <div className="logo" onClick={() => setView('client')}>
           <img src="/assets/logo.jpg" alt="Logo" style={{height: '35px', borderRadius: '50%'}} />
-          <span style={{fontFamily: 'Bebas Neue', fontSize: '1.2rem', marginLeft: '10px', color: '#fff'}}>INFINITY</span>
         </div>
         <div className="nav-links">
           {view === 'client' ? (
@@ -173,7 +172,7 @@ function App() {
             <div className="hero-img-box">
               <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&q=80" alt="Gallery" />
             </div>
-            <div style={{position: 'absolute', bottom: '50px', left: '40px', display: 'flex', gap: '40px', alignItems: 'center'}}>
+            <div style={{position: 'absolute', bottom: '20px', left: '40px', display: 'flex', gap: '40px', alignItems: 'center'}}>
               <div style={{fontSize: '0.7rem', opacity: 0.5, letterSpacing: '2px'}}>01 / EST. 2026</div>
               <div style={{width: '100px', height: '1px', background: '#333'}}></div>
               <a href="#services" className="magnetic-btn">RÉSERVER <ArrowRight size={18} /></a>
