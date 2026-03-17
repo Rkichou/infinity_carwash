@@ -194,14 +194,14 @@ nav {
 }
 .titre {
   font-family: 'Bebas Neue';
-   font-size: '6rem';
+   font-size: 6rem;
     line-height: 1;
-     margin-bottom: '20px';
+     margin-bottom: 20px;
 }
 /* --- RESPONSIVE --- */
 @media (max-width: 992px) {
   .titre {
-   font-size: '5rem';
+   font-size: 5rem;
 }
   .services-grid, .booking-container { grid-template-columns: 1fr; }
   
