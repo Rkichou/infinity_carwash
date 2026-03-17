@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Car, Check, ArrowRight, Star, Instagram, Facebook, ChevronLeft, ChevronRight as ChevronRightIcon, Bike } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Car, Check, ArrowRight, Star, Instagram, Facebook, Bike } from 'lucide-react';
 import axios from 'axios';
 import './App.css';
 
@@ -123,7 +123,6 @@ function App() {
   const [formData, setFormData] = useState({ name: '', phone: '', formula: 'Bronze Citadine', date: '', time: '' });
   const [reservations, setReservations] = useState<Array<{name: string; phone: string; formula: string; date: string; time: string}>>([]);
   const [bookingSuccess, setBookingSuccess] = useState(false);
-  const optionsScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (view === 'admin') {
@@ -138,15 +137,6 @@ function App() {
       setBookingSuccess(true);
       setTimeout(() => setBookingSuccess(false), 5000);
     } catch (err) { alert("Erreur serveur."); }
-  };
-
-  const scrollOptions = (direction: 'left' | 'right') => {
-    if (optionsScrollRef.current) {
-      optionsScrollRef.current.scrollBy({
-        left: direction === 'left' ? -300 : 300,
-        behavior: 'smooth'
-      });
-    }
   };
 
   const currentFormula = vehicleType === 'cars' ? CARS_FORMULAS[selectedFormula] : null;
