@@ -172,7 +172,7 @@ function App() {
             <div className="hero-img-box">
               <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&q=80" alt="Gallery" />
             </div>
-            <div style={{position: 'absolute', bottom: '20px', left: '40px', display: 'flex', gap: '40px', alignItems: 'center'}}>
+            <div style={{position: 'absolute', bottom: '20px', left: '20px', display: 'flex', gap: '40px', alignItems: 'center'}}>
               <div style={{fontSize: '0.7rem', opacity: 0.5, letterSpacing: '2px'}}>01 / EST. 2026</div>
               <div style={{width: '100px', height: '1px', background: '#333'}}></div>
               <a href="#services" className="magnetic-btn">RÉSERVER <ArrowRight size={18} /></a>
