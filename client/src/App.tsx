@@ -1,7 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Car, Check, ArrowRight, Star, Instagram, Facebook, Bike } from 'lucide-react';
-import { createReservation, getReservations, type Reservation, type ReservationFormData } from './services/reservations';
+import { CalendarDays, Car, Check, ArrowRight, Star, Instagram, Facebook, Bike, Clock } from 'lucide-react';
+import { createReservation, getReservations, getReservationsByDate, type Reservation, type ReservationFormData } from './services/reservations';
 import './App.css';
+
+const OPENING_SLOTS = Array.from({ length: 9 }, (_, index) => `${String(index + 10).padStart(2, '0')}:00`);
+const CALENDAR_DAYS_TO_SHOW = 14;
+
+function getDateValue(offset: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
+function formatDate(dateValue: string, options: Intl.DateTimeFormatOptions) {
+  return new Date(`${dateValue}T00:00:00`).toLocaleDateString('fr-FR', options);
+}
 
 const CARS_FORMULAS = {
   bronze: {
@@ -122,6 +139,8 @@ function App() {
   const [currentOption, setCurrentOption] = useState(0);
   const [formData, setFormData] = useState<ReservationFormData>({ name: '', phone: '', formula: 'Bronze Citadine', date: '', time: '' });
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [bookedTimes, setBookedTimes] = useState<string[]>([]);
+  const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
   const getErrorMessage = (error: unknown) => {
@@ -143,11 +162,43 @@ function App() {
     }
   }, [view]);
 
+  useEffect(() => {
+    if (!formData.date) {
+      setBookedTimes([]);
+      setFormData((currentFormData) => ({ ...currentFormData, time: '' }));
+      return;
+    }
+
+    setIsLoadingSlots(true);
+    getReservationsByDate(formData.date)
+      .then((dateReservations) => {
+        const reservedTimes = dateReservations.map((reservation) => reservation.time);
+        setBookedTimes(reservedTimes);
+
+        setFormData((currentFormData) => (
+          reservedTimes.includes(currentFormData.time)
+            ? { ...currentFormData, time: '' }
+            : currentFormData
+        ));
+      })
+      .catch((error) => {
+        console.error('Erreur chargement créneaux Firebase:', error);
+        alert(`Impossible de charger les créneaux: ${getErrorMessage(error)}`);
+      })
+      .finally(() => setIsLoadingSlots(false));
+  }, [formData.date]);
+
   const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!formData.date || !formData.time) {
+      alert('Choisis une date et un créneau disponible.');
+      return;
+    }
+
     try {
       await createReservation(formData);
       setBookingSuccess(true);
+      setBookedTimes((currentBookedTimes) => [...currentBookedTimes, formData.time]);
       setFormData({ name: '', phone: '', formula: formData.formula, date: '', time: '' });
       setTimeout(() => setBookingSuccess(false), 5000);
     } catch (err) {
@@ -157,6 +208,20 @@ function App() {
   };
 
   const currentFormula = vehicleType === 'cars' ? CARS_FORMULAS[selectedFormula] : null;
+  const availableSlots = OPENING_SLOTS.filter((slot) => !bookedTimes.includes(slot));
+  const calendarDays = Array.from({ length: CALENDAR_DAYS_TO_SHOW }, (_, index) => {
+    const dateValue = getDateValue(index);
+
+    return {
+      dateValue,
+      dayName: formatDate(dateValue, { weekday: 'short' }),
+      dayNumber: formatDate(dateValue, { day: '2-digit' }),
+      monthName: formatDate(dateValue, { month: 'short' }),
+    };
+  });
+  const selectedDateLabel = formData.date
+    ? formatDate(formData.date, { weekday: 'long', day: '2-digit', month: 'long' })
+    : '';
 
   return (
     <div className="App">
@@ -434,10 +499,10 @@ function App() {
           {/* BOOKING SECTION */}
           <section id="booking" className="container" style={{paddingBottom: '150px'}}>
             <div className="booking-container">
-              <div>
-                <h2 style={{fontFamily: 'Bebas Neue', fontSize: '5rem', marginBottom: '30px'}}>PRÊT POUR LE<br /><span style={{color: 'var(--yellow)'}}>SHOWROOM ?</span></h2>
-                <p style={{color: '#666', maxWidth: '400px', marginBottom: '40px'}}>Votre véhicule mérite le meilleur traitement. Remplissez les détails et nous nous occupons du reste.</p>
-                <div style={{display: 'flex', gap: '20px'}}>
+              <div className="booking-copy">
+                <h2>PRÊT POUR LE<br /><span>SHOWROOM ?</span></h2>
+                <p>Votre véhicule mérite le meilleur traitement. Remplissez les détails et nous nous occupons du reste.</p>
+                <div className="booking-socials">
                   <Instagram size={20} color="#333" />
                   <Facebook size={20} color="#333" />
                 </div>
@@ -445,7 +510,7 @@ function App() {
 
               <div>
                 {bookingSuccess ? (
-                  <div style={{background: 'var(--yellow)', color: '#000', padding: '60px', borderRadius: '30px', textAlign: 'center'}}>
+                  <div className="booking-success">
                     <Star size={60} fill="#000" style={{marginBottom: '20px'}} />
                     <h3 style={{fontFamily: 'Bebas Neue', fontSize: '3rem'}}>CONFIRMÉ !</h3>
                     <p>On se voit bientôt.</p>
@@ -464,17 +529,70 @@ function App() {
                       <label>SERVICE</label>
                       <input type="text" value={formData.formula} readOnly style={{background: '#111', cursor: 'not-allowed'}} />
                     </div>
-                    <div style={{display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px'}}>
-                      <div className="input-group">
-                        <label>DATE</label>
-                        <input type="date" required value={formData.date} onChange={e => setFormData({...formData, date: e.target.value})} />
+                    <div className="booking-calendar">
+                      <div className="booking-calendar-header">
+                        <div>
+                          <span className="booking-kicker">Disponibilites</span>
+                          <h3>Choisir un creneau</h3>
+                        </div>
+                        <div className="opening-hours">
+                          <Clock size={16} />
+                          10h - 19h
+                        </div>
                       </div>
-                      <div className="input-group">
-                        <label>HEURE</label>
-                        <input type="time" required value={formData.time} onChange={e => setFormData({...formData, time: e.target.value})} />
+
+                      <div className="date-strip" aria-label="Choisir une date">
+                        {calendarDays.map((day, index) => (
+                          <button
+                            key={day.dateValue}
+                            type="button"
+                            className={`date-card ${formData.date === day.dateValue ? 'active' : ''}`}
+                            onClick={() => setFormData({...formData, date: day.dateValue, time: ''})}
+                          >
+                            <span>{index === 0 ? "Aujourd'hui" : day.dayName}</span>
+                            <strong>{day.dayNumber}</strong>
+                            <small>{day.monthName}</small>
+                          </button>
+                        ))}
+                      </div>
+
+                      <div className="slots-panel">
+                        <div className="slots-panel-title">
+                          <CalendarDays size={18} />
+                          <span>{selectedDateLabel || 'Selectionnez une date'}</span>
+                        </div>
+
+                        {isLoadingSlots ? (
+                          <div className="slots-empty">Chargement des creneaux...</div>
+                        ) : formData.date && availableSlots.length > 0 ? (
+                          <div className="slot-grid">
+                            {availableSlots.map((slot) => (
+                              <button
+                                key={slot}
+                                type="button"
+                                className={`slot-card ${formData.time === slot ? 'active' : ''}`}
+                                onClick={() => setFormData({...formData, time: slot})}
+                              >
+                                <span>{slot}</span>
+                                <small>{formatDate(formData.date, { day: '2-digit', month: 'short' })}</small>
+                              </button>
+                            ))}
+                          </div>
+                        ) : formData.date ? (
+                          <div className="slots-empty">Cette date est complete.</div>
+                        ) : (
+                          <div className="slots-empty">Choisissez une date pour voir les creneaux libres.</div>
+                        )}
+
+                        {formData.date && formData.time ? (
+                          <div className="selected-slot-summary">
+                            <span>Votre rendez-vous</span>
+                            <strong>{selectedDateLabel} a {formData.time}</strong>
+                          </div>
+                        ) : null}
                       </div>
                     </div>
-                    <button type="submit" className="magnetic-btn" style={{width: '100%', justifyContent: 'center', height: '80px', fontSize: '1.2rem'}}>CONFIRMER LA SESSION</button>
+                    <button type="submit" className="magnetic-btn booking-submit">CONFIRMER LA SESSION</button>
                   </form>
                 )}
               </div>
