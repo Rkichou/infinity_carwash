@@ -169,6 +169,8 @@ nav {
   gap: clamp(36px, 7vw, 100px);
   padding: 150px 0;
   align-items: start;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 .booking-copy h2 {
   font-family: 'Bebas Neue';
@@ -482,18 +484,14 @@ nav {
     flex-direction: column;
   }
   .date-strip {
-    display: flex;
-    overflow-x: auto;
-    padding-bottom: 8px;
-    scroll-snap-type: x mandatory;
-    margin-left: -2px;
-    margin-right: -2px;
-    -webkit-overflow-scrolling: touch;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    overflow: visible;
+    padding-bottom: 0;
   }
   .date-card {
-    flex: 0 0 84px;
-    min-width: 84px;
-    scroll-snap-align: start;
+    min-width: 0;
+    width: 100%;
   }
   .slot-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1162,8 +1160,9 @@ nav {
   .booking-calendar {
     border-radius: 18px;
     padding: 16px;
-    margin-left: -2px;
-    margin-right: -2px;
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 100%;
   }
 
   .booking-calendar-header {
@@ -1188,11 +1187,12 @@ nav {
   .date-strip {
     gap: 8px;
     margin-bottom: 16px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .date-card {
-    flex-basis: 72px;
-    min-width: 72px;
+    width: 100%;
+    min-width: 0;
     min-height: 86px;
     border-radius: 14px;
     padding: 12px 8px;
