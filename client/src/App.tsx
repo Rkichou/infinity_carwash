@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Car, Check, ArrowRight, Star, Instagram, Facebook, Bike } from 'lucide-react';
-import axios from 'axios';
+import { createReservation, getReservations, type Reservation, type ReservationFormData } from './services/reservations';
 import './App.css';
 
 const CARS_FORMULAS = {
@@ -120,23 +120,26 @@ function App() {
   const [selectedFormula, setSelectedFormula] = useState<'bronze' | 'gold' | 'platinum'>('bronze');
   const [selectedBikeType, setSelectedBikeType] = useState<'scooter' | 'moto1' | 'moto2'>('scooter');
   const [currentOption, setCurrentOption] = useState(0);
-  const [formData, setFormData] = useState({ name: '', phone: '', formula: 'Bronze Citadine', date: '', time: '' });
-  const [reservations, setReservations] = useState<Array<{name: string; phone: string; formula: string; date: string; time: string}>>([]);
+  const [formData, setFormData] = useState<ReservationFormData>({ name: '', phone: '', formula: 'Bronze Citadine', date: '', time: '' });
+  const [reservations, setReservations] = useState<Reservation[]>([]);
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
   useEffect(() => {
     if (view === 'admin') {
-      axios.get('http://localhost:5001/api/reservations').then(res => setReservations(res.data));
+      getReservations()
+        .then(setReservations)
+        .catch(() => alert("Impossible de charger les réservations Firebase."));
     }
   }, [view]);
 
   const handleBooking = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5001/api/reservations', formData);
+      await createReservation(formData);
       setBookingSuccess(true);
+      setFormData({ name: '', phone: '', formula: formData.formula, date: '', time: '' });
       setTimeout(() => setBookingSuccess(false), 5000);
-    } catch (err) { alert("Erreur serveur."); }
+    } catch (err) { alert("Erreur Firebase. Vérifie la configuration Firestore."); }
   };
 
   const currentFormula = vehicleType === 'cars' ? CARS_FORMULAS[selectedFormula] : null;
