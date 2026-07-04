@@ -124,11 +124,22 @@ function App() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [bookingSuccess, setBookingSuccess] = useState(false);
 
+  const getErrorMessage = (error: unknown) => {
+    if (error instanceof Error) {
+      return error.message;
+    }
+
+    return 'Erreur inconnue.';
+  };
+
   useEffect(() => {
     if (view === 'admin') {
       getReservations()
         .then(setReservations)
-        .catch(() => alert("Impossible de charger les réservations Firebase."));
+        .catch((error) => {
+          console.error('Erreur lecture Firebase:', error);
+          alert(`Impossible de charger les réservations Firebase: ${getErrorMessage(error)}`);
+        });
     }
   }, [view]);
 
@@ -139,7 +150,10 @@ function App() {
       setBookingSuccess(true);
       setFormData({ name: '', phone: '', formula: formData.formula, date: '', time: '' });
       setTimeout(() => setBookingSuccess(false), 5000);
-    } catch (err) { alert("Erreur Firebase. Vérifie la configuration Firestore."); }
+    } catch (err) {
+      console.error('Erreur création réservation Firebase:', err);
+      alert(`Erreur Firebase: ${getErrorMessage(err)}`);
+    }
   };
 
   const currentFormula = vehicleType === 'cars' ? CARS_FORMULAS[selectedFormula] : null;
