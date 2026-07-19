@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { CalendarDays, Car, Check, ArrowRight, Star, Instagram, Facebook, Bike, Clock } from 'lucide-react';
+import { CalendarDays, Car, Check, ArrowRight, Star, Instagram, Bike, Clock, MapPin, Navigation } from 'lucide-react';
 import { createReservation, getReservations, getReservationsByDate, type Reservation, type ReservationFormData } from './services/reservations';
 import './App.css';
 
@@ -266,9 +266,11 @@ function App() {
           {/* HERO SECTION */}
           <section className="hero container">
             <h1 className="hero-text">
-              PRECISION<br />
-              <span style={{color: 'var(--yellow)'}}>DETAILING</span><br />
-              SYSTEM.
+            PRÉCISION et <br />
+
+            <span style={{ color: 'var(--yellow)' }}>ESTHÉTIQUE </span><br />
+
+            AUTOMOBILE.
             </h1>
             <div className="hero-img-box">
               <img src="/assets/icw.png" alt="Gallery" />
@@ -531,10 +533,6 @@ function App() {
               <div className="booking-copy">
                 <h2>PRÊT POUR LE<br /><span>SHOWROOM ?</span></h2>
                 <p>Votre véhicule mérite le meilleur traitement. Remplissez les détails et nous nous occupons du reste.</p>
-                <div className="booking-socials">
-                  <Instagram size={20} color="#333" />
-                  <Facebook size={20} color="#333" />
-                </div>
               </div>
 
               <div>
@@ -631,6 +629,45 @@ function App() {
               </div>
             </div>
           </section>
+          
+          <section className="location-section">
+            <div className="container">
+              <div className="location-shell">
+                <div className="location-copy">
+                  <span className="booking-kicker">Localisation</span>
+                  <h2>OU NOUS TROUVER</h2>
+                  <p>Retrouvez Infinity Car Wash a Suresnes pour votre rendez-vous detailing.</p>
+
+                  <div className="location-card">
+                    <MapPin size={22} />
+                    <div>
+                      <span>Adresse</span>
+                      <strong>106 Bd Henri Sellier, 92150 Suresnes</strong>
+                    </div>
+                  </div>
+
+                  <a
+                    className="location-route"
+                    href="https://www.google.com/maps/search/?api=1&query=Infinity%20car%20wash%20Suresnes"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    ITINERAIRE <Navigation size={18} />
+                  </a>
+                </div>
+
+                <div className="location-map-wrap">
+                  <iframe
+                    title="Carte Infinity Car Wash"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.708853843861!2d2.216086262168882!3d48.86376200020878!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x47e665263fc5ea25%3A0x8bc36d8cab698e2e!2sInfinity%20car%20wash!5e0!3m2!1sfr!2sfr!4v1784496312336!5m2!1sfr!2sfr"
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                  />
+                </div>
+              </div>
+            </div>
+          </section>
         </main>
       ) : (
         /* ADMIN VIEW */
@@ -708,9 +745,26 @@ function App() {
         </div>
       )}
 
-      <footer style={{padding: '100px 0', borderTop: '1px solid var(--border)', marginTop: '150px', textAlign: 'center'}}>
-        <div style={{fontFamily: 'Bebas Neue', fontSize: '4rem', opacity: 0.05}}>INFINITY CAR WASH</div>
-        <p style={{fontSize: '0.6rem', letterSpacing: '5px', color: '#333'}}>HIGH END DETAILING / TOKYO / PARIS / LONDON</p>
+      <footer className="brand-footer">
+        <div className="footer-sign">
+          <div className="footer-brand-line">
+            <span>INFINITY</span>
+            <span className="footer-brand-car">CAR</span>
+            <span>WASH</span>
+            <span className="footer-brand-dot">.</span>
+          </div>
+          <p>CENTRE D'ESTHETIQUE AUTOMOBILE</p>
+          <a
+            className="footer-instagram"
+            href="https://www.instagram.com/infinitycarwash92?igsh=MTcyZXVybTluZjdw&utm_source=qr"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Instagram Infinity Car Wash"
+          >
+            <Instagram size={18} />
+            <span>@infinitycarwash92</span>
+          </a>
+        </div>
       </footer>
     </div>
   );
