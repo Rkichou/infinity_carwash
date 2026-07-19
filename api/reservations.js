@@ -1,5 +1,6 @@
 const admin = require('firebase-admin');
 const { cert, getApps, initializeApp } = require('firebase-admin/app');
+const { FieldValue, getFirestore } = require('firebase-admin/firestore');
 const nodemailer = require('nodemailer');
 
 const SITE_NAME = process.env.SITE_NAME || 'Infinity Car Wash';
@@ -212,13 +213,13 @@ module.exports = async function handler(req, res) {
   try {
     getFirebaseAdminApp();
 
-    const db = admin.firestore();
+    const db = getFirestore();
     const reservationId = getReservationId(reservation.date, reservation.time);
     const reservationRef = db.collection(RESERVATIONS_COLLECTION).doc(reservationId);
     const reservationForDb = {
       ...reservation,
       status: 'pending',
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      createdAt: FieldValue.serverTimestamp(),
       confirmationEmailSent: false,
       confirmationEmailSentAt: null,
     };
@@ -253,7 +254,7 @@ module.exports = async function handler(req, res) {
 
       await reservationRef.update({
         confirmationEmailSent: true,
-        confirmationEmailSentAt: admin.firestore.FieldValue.serverTimestamp(),
+        confirmationEmailSentAt: FieldValue.serverTimestamp(),
         confirmationEmailMessageId: messageId,
       });
 
@@ -268,7 +269,7 @@ module.exports = async function handler(req, res) {
 
       await reservationRef.update({
         confirmationEmailError: emailError.message || 'Erreur inconnue',
-        confirmationEmailFailedAt: admin.firestore.FieldValue.serverTimestamp(),
+        confirmationEmailFailedAt: FieldValue.serverTimestamp(),
       });
 
       return res.status(201).json({
