@@ -137,8 +137,18 @@ function App() {
   const [selectedFormula, setSelectedFormula] = useState<'bronze' | 'gold' | 'platinum'>('bronze');
   const [selectedBikeType, setSelectedBikeType] = useState<'scooter' | 'moto1' | 'moto2'>('scooter');
   const [currentOption, setCurrentOption] = useState(0);
-  const [formData, setFormData] = useState<ReservationFormData>({ name: '', phone: '', formula: 'Bronze Citadine', date: '', time: '' });
+  const [formData, setFormData] = useState<ReservationFormData>({
+    name: '',
+    email: '',
+    phone: '',
+    formula: 'Bronze Citadine',
+    vehicle: 'Citadine',
+    price: '49€',
+    date: '',
+    time: '',
+  });
   const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [selectedReservation, setSelectedReservation] = useState<Reservation | null>(null);
   const [bookedTimes, setBookedTimes] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
@@ -199,7 +209,16 @@ function App() {
       await createReservation(formData);
       setBookingSuccess(true);
       setBookedTimes((currentBookedTimes) => [...currentBookedTimes, formData.time]);
-      setFormData({ name: '', phone: '', formula: formData.formula, date: '', time: '' });
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        formula: formData.formula,
+        vehicle: formData.vehicle,
+        price: formData.price,
+        date: '',
+        time: '',
+      });
       setTimeout(() => setBookingSuccess(false), 5000);
     } catch (err) {
       console.error('Erreur création réservation Firebase:', err);
@@ -252,10 +271,10 @@ function App() {
               SYSTEM.
             </h1>
             <div className="hero-img-box">
-              <img src="https://images.unsplash.com/photo-1607860108855-64acf2078ed9?auto=format&fit=crop&q=80" alt="Gallery" />
+              <img src="/assets/icw.png" alt="Gallery" />
             </div>
-            <div style={{position: 'absolute', bottom: '20px', left: '20px', display: 'flex', gap: '40px', alignItems: 'center'}}>
-              <div style={{fontSize: '0.7rem', opacity: 0.5, letterSpacing: '2px'}}>01 / EST. 2026</div>
+            <div style={{position: 'absolute', bottom: '20px', left: '20px', display: 'flex', gap: '28px', alignItems: 'center'}}>
+              <div style={{fontSize: '0.7rem', opacity: 0.5, letterSpacing: '2px'}}>Depuis 2023</div>
               <div style={{width: '100px', height: '1px', background: '#333'}}></div>
               <a href="#services" className="magnetic-btn">RÉSERVER <ArrowRight size={18} /></a>
             </div>
@@ -272,16 +291,15 @@ function App() {
 
               <div className="gallery-grid">
                 {[
-                  { src: '/gallery/403924050_3587710754833150_5900264034059047470_n.jpg', title: 'Detailing Premium' },
-                  { src: '/gallery/403973534_1055402805789110_7233715674512643210_n.jpg', title: 'Finition Brillante' },
-                  { src: '/gallery/403974184_862673138686066_3025127976942975769_n.jpg', title: 'Nettoyage Intérieur' },
-                  { src: '/gallery/403974408_370509418872760_6173925844015582472_n.jpg', title: 'Cire Protection' },
-                  { src: '/gallery/404009282_294461203563925_6457900525238846879_n.jpg', title: 'Jantes Brillantes' },
-                  { src: '/gallery/404312393_1084507149246173_7625125058440905692_n.jpg', title: 'Résultat Final' },
-                  { src: '/gallery/407462813_1181528016139196_3562692919351622280_n.jpg', title: 'Avant/Après' },
-                  { src: '/gallery/625263281_1522449202190828_99402922404437828_n.jpg', title: 'Détail Professionnel' },
-                  { src: '/gallery/394246266_4391153877776812_4198801479392743647_n.jpg', title: 'Soin Complet' },
-                  { src: '/gallery/394534742_262979086237373_7662017294127398248_n.jpg', title: 'Excellence' },
+                  { src: '/gallery/625263281_1522449202190828_99402922404437828_n.jpg', title: 'Cire Protection' },
+                  { src: '/gallery/moto.png', title: 'lavage 2 roues' },
+                  { src: '/gallery/finition.png', title: 'Resultat final' },
+                  { src: '/gallery/jante.png', title: 'Jantes Brillantes' },
+                  { src: '/gallery/407462813_1181528016139196_3562692919351622280_n.jpg', title: 'Finition Brillante' },
+                  { src: '/gallery/403924050_3587710754833150_5900264034059047470_n.jpg', title: 'Resultat final' },
+                  { src: '/gallery/siege.png', title: 'Détail Professionnel' },
+                  { src: '/gallery/interieur.png', title: 'lavage interieur' },
+
                 ].map((image, idx) => (
                   <div key={idx} className="gallery-item">
                     <img src={image.src} alt={image.title} />
@@ -429,7 +447,13 @@ function App() {
                       className="cta-reserve-btn"
                       style={{background: CARS_FORMULAS[selectedFormula].color}}
                       onClick={() => {
-                        setFormData({...formData, formula: `${currentFormula.name} ${currentFormula.options[currentOption].vehicle}`});
+                        const option = currentFormula.options[currentOption];
+                        setFormData({
+                          ...formData,
+                          formula: `${currentFormula.name} ${option.vehicle}`,
+                          vehicle: option.vehicle,
+                          price: option.price,
+                        });
                         window.location.href = '#booking';
                       }}
                     >
@@ -480,7 +504,12 @@ function App() {
                             className="magnetic-btn"
                             style={{width: '100%', justifyContent: 'center'}}
                             onClick={() => {
-                              setFormData({...formData, formula: bike.name});
+                              setFormData({
+                                ...formData,
+                                formula: bike.name,
+                                vehicle: bike.name,
+                                price: bike.price,
+                              });
                               window.location.href = '#booking';
                             }}
                           >
@@ -520,6 +549,10 @@ function App() {
                     <div className="input-group">
                       <label>CLIENT</label>
                       <input type="text" placeholder="NOM COMPLET" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
+                    </div>
+                    <div className="input-group">
+                      <label>EMAIL</label>
+                      <input type="email" placeholder="EMAIL" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                     </div>
                     <div className="input-group">
                       <label>CONTACT</label>
@@ -601,28 +634,77 @@ function App() {
         </main>
       ) : (
         /* ADMIN VIEW */
-        <div className="container" style={{paddingTop: '150px'}}>
-          <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '60px'}}>
-            <h2 style={{fontFamily: 'Bebas Neue', fontSize: '5rem'}}>PLANNING</h2>
-            <div style={{textAlign: 'right'}}>
-              <span style={{fontSize: '3rem', fontWeight: '900'}}>{reservations.length}</span><br />
-              <span style={{fontSize: '0.7rem', color: 'var(--yellow)', letterSpacing: '2px'}}>RESERVATIONS TOTALES</span>
+        <div className="container admin-page">
+          <div className="admin-header">
+            <h2>PLANNING</h2>
+            <div className="admin-count">
+              <span>{reservations.length}</span><br />
+              <small>RESERVATIONS TOTALES</small>
             </div>
           </div>
 
-          <div style={{background: 'var(--card-bg)', borderRadius: '30px', border: '1px solid var(--border)', overflow: 'hidden'}}>
+          <div className="admin-list">
             {reservations.map((res, i) => (
-              <div key={i} style={{padding: '30px 40px', borderBottom: '1px solid var(--border)', display: 'grid', gridTemplateColumns: '2fr 1fr 1fr 1fr', alignItems: 'center', transition: '0.3s'}} onMouseEnter={(e) => e.currentTarget.style.background = '#111'} onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}>
-                <div>
-                  <div style={{fontWeight: '800', fontSize: '1.1rem'}}>{res.name}</div>
-                  <div style={{color: '#555', fontSize: '0.8rem'}}>{res.phone}</div>
+              <button key={res.id || i} type="button" className="admin-row" onClick={() => setSelectedReservation(res)}>
+                <div className="admin-client">
+                  <div>{res.name}</div>
+                  <span>{res.date}</span>
                 </div>
-                <div style={{color: 'var(--yellow)', fontWeight: '900'}}>{res.formula.toUpperCase()}</div>
-                <div>{res.date}</div>
-                <div style={{textAlign: 'right'}}>{res.time}</div>
-              </div>
+                <div className="admin-service">{res.formula.toUpperCase()}</div>
+                <div className="admin-date">{res.phone}</div>
+                <div className="admin-time">{res.time}</div>
+              </button>
             ))}
           </div>
+
+          {selectedReservation ? (
+            <div className="reservation-modal-backdrop" onClick={() => setSelectedReservation(null)}>
+              <div className="reservation-modal" role="dialog" aria-modal="true" aria-label="Details reservation" onClick={(event) => event.stopPropagation()}>
+                <button type="button" className="modal-close" onClick={() => setSelectedReservation(null)}>×</button>
+                <span className="booking-kicker">Reservation</span>
+                <h3>{selectedReservation.name}</h3>
+
+                <div className="modal-detail-grid">
+                  <div>
+                    <span>Telephone</span>
+                    <strong>{selectedReservation.phone}</strong>
+                  </div>
+                  <div>
+                    <span>Email</span>
+                    <strong>{selectedReservation.email}</strong>
+                  </div>
+                  <div>
+                    <span>Service</span>
+                    <strong>{selectedReservation.formula}</strong>
+                  </div>
+                  {selectedReservation.vehicle ? (
+                    <div>
+                      <span>Vehicule</span>
+                      <strong>{selectedReservation.vehicle}</strong>
+                    </div>
+                  ) : null}
+                  {selectedReservation.price ? (
+                    <div>
+                      <span>Prix</span>
+                      <strong>{selectedReservation.price}</strong>
+                    </div>
+                  ) : null}
+                  <div>
+                    <span>Date</span>
+                    <strong>{formatDate(selectedReservation.date, { weekday: 'long', day: '2-digit', month: 'long', year: 'numeric' })}</strong>
+                  </div>
+                  <div>
+                    <span>Heure</span>
+                    <strong>{selectedReservation.time}</strong>
+                  </div>
+                  <div>
+                    <span>Statut</span>
+                    <strong>{selectedReservation.status}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ) : null}
         </div>
       )}
 

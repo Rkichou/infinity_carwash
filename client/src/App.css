@@ -288,7 +288,7 @@ nav {
 }
 .date-strip {
   display: grid;
-  grid-template-columns: repeat(7, minmax(78px, 1fr));
+  grid-template-columns: repeat(6, minmax(78px, 1fr));
   gap: 10px;
   margin-bottom: 22px;
   min-width: 0;
@@ -311,7 +311,7 @@ nav {
 .date-card span,
 .date-card small {
   color: #777;
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   font-weight: 800;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -427,6 +427,172 @@ nav {
   text-align: right;
   text-transform: capitalize;
   overflow-wrap: anywhere;
+}
+.admin-page {
+  padding-top: 150px;
+}
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 60px;
+}
+.admin-header h2 {
+  font-family: 'Bebas Neue';
+  font-size: 5rem;
+  line-height: 1;
+}
+.admin-count {
+  text-align: right;
+}
+.admin-count span {
+  font-size: 3rem;
+  font-weight: 900;
+}
+.admin-count small {
+  color: var(--yellow);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+.admin-list {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  overflow: hidden;
+}
+.admin-row {
+  width: 100%;
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  color: #fff;
+  padding: 30px 40px;
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.25s var(--easing), transform 0.25s var(--easing);
+}
+.admin-row:last-child {
+  border-bottom: 0;
+}
+.admin-row:hover {
+  background: #111;
+}
+.admin-client div {
+  font-size: 1.1rem;
+  font-weight: 800;
+}
+.admin-client span {
+  color: #555;
+  font-size: 0.8rem;
+}
+.admin-service {
+  color: var(--yellow);
+  font-weight: 900;
+}
+.admin-date {
+  width: max-content;
+}
+.admin-time {
+  text-align: right;
+}
+.reservation-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(18px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 22px;
+  animation: fadeIn 0.2s ease;
+}
+.reservation-modal {
+  position: relative;
+  width: min(560px, 100%);
+  background: linear-gradient(145deg, rgba(18, 18, 18, 0.98), rgba(5, 5, 5, 0.98));
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 28px;
+  padding: 32px;
+  box-shadow: 0 30px 100px rgba(0, 0, 0, 0.55);
+  animation: modalIn 0.24s var(--easing);
+}
+.reservation-modal h3 {
+  font-family: 'Bebas Neue';
+  font-size: 3.2rem;
+  line-height: 1;
+  margin: 8px 42px 26px 0;
+}
+.modal-close {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  font-size: 1.7rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: 0.2s var(--easing);
+}
+.modal-close:hover {
+  background: var(--yellow);
+  color: #000;
+  transform: rotate(90deg);
+}
+.modal-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.modal-detail-grid div {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 16px;
+  padding: 16px;
+  min-width: 0;
+}
+.modal-detail-grid div:nth-child(2),
+.modal-detail-grid div:nth-child(3) {
+  grid-column: span 2;
+}
+.modal-detail-grid span {
+  display: block;
+  color: #777;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.modal-detail-grid strong {
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 .titre {
   font-family: 'Bebas Neue';
@@ -1256,5 +1422,113 @@ nav {
     border-radius: 999px;
     font-size: 0.88rem;
     line-height: 1.25;
+  }
+
+  .admin-page {
+    padding-top: 96px;
+  }
+
+  .admin-header {
+    align-items: flex-start;
+    margin-bottom: 26px;
+  }
+
+  .admin-header h2 {
+    font-size: 3.4rem;
+  }
+
+  .admin-count span {
+    font-size: 2rem;
+  }
+
+  .admin-count small {
+    display: block;
+    font-size: 0.56rem;
+    max-width: 90px;
+  }
+
+  .admin-list {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    display: grid;
+    gap: 12px;
+    overflow: visible;
+  }
+
+  .admin-row {
+    grid-template-columns: 1fr;
+    padding: 18px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), rgba(255, 222, 0, 0.025));
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .admin-row:active {
+    transform: scale(0.98);
+  }
+
+  .admin-client {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-width: 0;
+  }
+
+  .admin-client div {
+    font-size: 1rem;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .admin-client span {
+    color: var(--yellow);
+    font-size: 0.78rem;
+    font-weight: 900;
+    white-space: nowrap;
+  }
+
+  .admin-service,
+  .admin-date,
+  .admin-time {
+    display: none;
+  }
+
+  .reservation-modal-backdrop {
+    align-items: flex-end;
+    padding: 14px;
+  }
+
+  .reservation-modal {
+    border-radius: 24px;
+    padding: 24px 18px 18px;
+    max-height: 88vh;
+    overflow-y: auto;
+  }
+
+  .reservation-modal h3 {
+    font-size: 2.4rem;
+    margin-bottom: 20px;
+  }
+
+  .modal-close {
+    top: 14px;
+    right: 14px;
+    width: 38px;
+    height: 38px;
+  }
+
+  .modal-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .modal-detail-grid div:nth-child(2),
+  .modal-detail-grid div:nth-child(3) {
+    grid-column: auto;
   }
 }

@@ -1,32 +1,29 @@
 import {
   collection,
-  doc,
   getDocs,
   query,
-  serverTimestamp,
-  setDoc,
   where,
 } from 'firebase/firestore';
 import { db, missingFirebaseEnvKeys } from '../firebase';
 
 export type ReservationFormData = {
   name: string;
+  email: string;
   phone: string;
   formula: string;
   date: string;
   time: string;
+  vehicle?: string;
+  price?: string;
 };
 
 export type Reservation = ReservationFormData & {
   id: string;
   status: 'pending';
+  confirmationEmailSent?: boolean;
 };
 
 const reservationsCollection = collection(db, 'reservations');
-
-function getReservationId(date: string, time: string) {
-  return `${date}_${time}`;
-}
 
 function assertFirebaseConfig() {
   if (missingFirebaseEnvKeys.length > 0) {
@@ -35,13 +32,25 @@ function assertFirebaseConfig() {
 }
 
 export async function createReservation(formData: ReservationFormData) {
-  assertFirebaseConfig();
-
-  await setDoc(doc(reservationsCollection, getReservationId(formData.date, formData.time)), {
-    ...formData,
-    status: 'pending',
-    createdAt: serverTimestamp(),
+  const response = await fetch(import.meta.env.VITE_RESERVATION_API_URL || '/api/reservations', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(formData),
   });
+
+  const result = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    throw new Error(result.error || 'Impossible de creer la reservation.');
+  }
+
+  if (result.warning) {
+    console.warn(result.warning);
+  }
+
+  return result as { id: string; emailSent: boolean; warning?: string };
 }
 
 export async function getReservationsByDate(date: string): Promise<Reservation[]> {
@@ -56,11 +65,15 @@ export async function getReservationsByDate(date: string): Promise<Reservation[]
       return {
         id: document.id,
         name: data.name,
+        email: data.email,
         phone: data.phone,
         formula: data.formula,
         date: data.date,
         time: data.time,
+        vehicle: data.vehicle,
+        price: data.price,
         status: data.status ?? 'pending',
+        confirmationEmailSent: data.confirmationEmailSent,
       };
     })
     .sort((left, right) => left.time.localeCompare(right.time));
@@ -78,11 +91,15 @@ export async function getReservations(): Promise<Reservation[]> {
       return {
         id: document.id,
         name: data.name,
+        email: data.email,
         phone: data.phone,
         formula: data.formula,
         date: data.date,
         time: data.time,
+        vehicle: data.vehicle,
+        price: data.price,
         status: data.status ?? 'pending',
+        confirmationEmailSent: data.confirmationEmailSent,
       };
     })
     .sort((left, right) => `${left.date} ${left.time}`.localeCompare(`${right.date} ${right.time}`));
