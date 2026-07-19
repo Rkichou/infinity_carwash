@@ -1,4 +1,5 @@
 const admin = require('firebase-admin');
+const { cert, getApps, initializeApp } = require('firebase-admin/app');
 const nodemailer = require('nodemailer');
 
 const SITE_NAME = process.env.SITE_NAME || 'Infinity Car Wash';
@@ -15,16 +16,18 @@ function getRequiredEnv(name) {
 }
 
 function getFirebaseAdminApp() {
-  if (admin.apps.length > 0) {
-    return admin.app();
+  const apps = getApps();
+
+  if (apps.length > 0) {
+    return apps[0];
   }
 
   const projectId = getRequiredEnv('FIREBASE_PROJECT_ID');
   const clientEmail = getRequiredEnv('FIREBASE_CLIENT_EMAIL');
   const privateKey = getRequiredEnv('FIREBASE_PRIVATE_KEY').replace(/\\n/g, '\n');
 
-  return admin.initializeApp({
-    credential: admin.credential.cert({
+  return initializeApp({
+    credential: cert({
       projectId,
       clientEmail,
       privateKey,
