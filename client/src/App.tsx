@@ -251,7 +251,6 @@ function App() {
         date: '',
         time: '',
       });
-      setTimeout(() => setBookingSuccess(false), 5000);
     } catch (err) {
       console.error('Erreur création réservation Firebase:', err);
       alert(`Erreur Firebase: ${getErrorMessage(err)}`);
@@ -577,13 +576,6 @@ function App() {
               </div>
 
               <div>
-                {bookingSuccess ? (
-                  <div className="booking-success">
-                    <Star size={60} fill="#000" style={{marginBottom: '20px'}} />
-                    <h3 style={{fontFamily: 'Bebas Neue', fontSize: '3rem'}}>CONFIRMÉ !</h3>
-                    <p>On se voit bientôt.</p>
-                  </div>
-                ) : (
                   <form onSubmit={handleBooking}>
                     <div className="input-group">
                       <label>CLIENT</label>
@@ -667,10 +659,26 @@ function App() {
                   <div style={{ display: 'flex', justifyContent: 'center' }}>
                     <button type="submit" className="magnetic-btn booking-submit" >CONFIRMER LA SESSION</button></div>
                   </form>
-                )}
               </div>
             </div>
           </section>
+
+          {bookingSuccess ? (
+            <div className="booking-success-backdrop" onClick={() => setBookingSuccess(false)}>
+              <div className="booking-success-modal" role="dialog" aria-modal="true" aria-label="Reservation confirmee" onClick={(event) => event.stopPropagation()}>
+                <button type="button" className="modal-close" onClick={() => setBookingSuccess(false)}>×</button>
+                <div className="booking-success-icon">
+                  <Star size={54} fill="#000" />
+                </div>
+                <span className="booking-kicker">Reservation envoyee</span>
+                <h3>CONFIRME !</h3>
+                <p>Votre rendez-vous est bien enregistre. Un email de confirmation vient de vous etre envoye.</p>
+                <button type="button" className="booking-success-action" onClick={() => setBookingSuccess(false)}>
+                  PARFAIT
+                </button>
+              </div>
+            </div>
+          ) : null}
           
           <section className="location-section">
             <div className="container">
