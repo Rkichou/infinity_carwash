@@ -164,8 +164,8 @@ function buildEmail(reservation) {
   ].join('\n');
 
   const optionalHtmlRows = [
-    reservation.vehicle ? `<tr><td>Vehicule</td><td>${escapeHtml(reservation.vehicle)}</td></tr>` : '',
-    reservation.price ? `<tr><td>Prix</td><td>${escapeHtml(reservation.price)}</td></tr>` : '',
+    reservation.vehicle ? `<tr><td style="padding:10px;border-bottom:1px solid #2a2a2a;color:#999">Vehicule</td><td style="padding:10px;border-bottom:1px solid #2a2a2a">${escapeHtml(reservation.vehicle)}</td></tr>` : '',
+    reservation.price ? `<tr><td style="padding:10px;border-bottom:1px solid #2a2a2a;color:#999">Prix</td><td style="padding:10px;border-bottom:1px solid #2a2a2a">${escapeHtml(reservation.price)}</td></tr>` : '',
   ].join('');
 
   const html = `
