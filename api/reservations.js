@@ -2,9 +2,12 @@ const admin = require('firebase-admin');
 const { cert, getApps, initializeApp } = require('firebase-admin/app');
 const { FieldValue, getFirestore } = require('firebase-admin/firestore');
 const nodemailer = require('nodemailer');
+const path = require('path');
 
 const SITE_NAME = process.env.SITE_NAME || 'Infinity Car Wash';
 const RESERVATIONS_COLLECTION = 'reservations';
+const LOGO_CID = 'icw-logo@infinity-car-wash';
+const LOGO_PATH = path.join(process.cwd(), 'client', 'public', 'assets', 'icw.png');
 
 function getRequiredEnv(name) {
   const value = process.env[name];
@@ -71,6 +74,18 @@ function formatTime(value) {
 
 function getFirstName(fullName) {
   return fullName.split(/\s+/)[0] || fullName;
+}
+
+function buildEmailRow(label, value, options = {}) {
+  const border = options.last ? '' : 'border-bottom:1px solid #2a2a2a;';
+  const valueColor = options.highlight ? '#ffde00' : '#ffffff';
+
+  return `
+    <tr>
+      <td width="42%" valign="top" style="padding:10px;${border}color:#999999;font-weight:400;text-align:left">${escapeHtml(label)}</td>
+      <td width="58%" valign="top" style="padding:10px;${border}color:${valueColor};font-weight:700;text-align:left">${escapeHtml(value)}</td>
+    </tr>
+  `;
 }
 
 function validateReservation(payload) {
@@ -156,16 +171,19 @@ function buildEmail(reservation) {
   const html = `
     <div style="font-family:Arial,sans-serif;background:#050505;color:#ffffff;padding:28px">
       <div style="max-width:560px;margin:0 auto;background:#111111;border:1px solid #2a2a2a;border-radius:18px;padding:28px">
+        <div style="text-align:center;margin:0 0 24px">
+          <img src="cid:${LOGO_CID}" alt="${escapeHtml(SITE_NAME)}" style="display:block;width:150px;max-width:70%;height:auto;margin:0 auto;border-radius:14px">
+        </div>
         <h1 style="margin:0 0 16px;color:#ffde00">Reservation confirmee</h1>
         <p>Bonjour ${escapeHtml(firstName)},</p>
         <p>Votre rendez-vous de lavage automobile est bien confirme.</p>
-        <table style="width:100%;border-collapse:collapse;margin:22px 0">
-          <tr><td style="padding:10px;border-bottom:1px solid #2a2a2a;color:#999">Service</td><td style="padding:10px;border-bottom:1px solid #2a2a2a">${escapeHtml(reservation.formula)}</td></tr>
-          <tr><td style="padding:10px;border-bottom:1px solid #2a2a2a;color:#999">Date</td><td style="padding:10px;border-bottom:1px solid #2a2a2a">${escapeHtml(formattedDate)}</td></tr>
-          <tr><td style="padding:10px;border-bottom:1px solid #2a2a2a;color:#999">Heure</td><td style="padding:10px;border-bottom:1px solid #2a2a2a">${escapeHtml(formattedTime)}</td></tr>
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="width:100%;border-collapse:collapse;margin:22px 0;table-layout:fixed">
+          ${buildEmailRow('Service', reservation.formula)}
+          ${buildEmailRow('Date', formattedDate)}
+          ${buildEmailRow('Heure', formattedTime)}
           ${optionalHtmlRows}
-          <tr><td style="padding:10px;border-bottom:1px solid #2a2a2a;color:#999">Lieu</td><td style="padding:10px;border-bottom:1px solid #2a2a2a">${escapeHtml(centerAddress)}</td></tr>
-          <tr><td style="padding:10px;color:#999">Numero de reservation</td><td style="padding:10px;font-weight:bold;color:#ffde00">${escapeHtml(bookingReference)}</td></tr>
+          ${buildEmailRow('Lieu', centerAddress)}
+          ${buildEmailRow('Numero de reservation', bookingReference, { highlight: true, last: true })}
         </table>
         <p>Votre reservation a bien ete enregistree.</p>
         <p style="color:#999">Merci pour votre confiance.<br>${escapeHtml(SITE_NAME)}</p>
@@ -179,6 +197,13 @@ function buildEmail(reservation) {
     subject: `Confirmation de votre rendez-vous - ${SITE_NAME}`,
     text,
     html,
+    attachments: [
+      {
+        filename: 'icw.png',
+        path: LOGO_PATH,
+        cid: LOGO_CID,
+      },
+    ],
   };
 }
 
