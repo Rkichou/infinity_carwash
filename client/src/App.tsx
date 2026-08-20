@@ -5,10 +5,9 @@ import './App.css';
 
 const OPENING_SLOTS = Array.from({ length: 9 }, (_, index) => `${String(index + 10).padStart(2, '0')}:00`);
 const CALENDAR_DAYS_TO_SHOW = 14;
+const WEEK_DAYS = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
 
-function getDateValue(offset: number) {
-  const date = new Date();
-  date.setDate(date.getDate() + offset);
+function getDateValueFromDate(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
@@ -16,8 +15,39 @@ function getDateValue(offset: number) {
   return `${year}-${month}-${day}`;
 }
 
+function getDateValue(offset: number) {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+
+  return getDateValueFromDate(date);
+}
+
 function formatDate(dateValue: string, options: Intl.DateTimeFormatOptions) {
   return new Date(`${dateValue}T00:00:00`).toLocaleDateString('fr-FR', options);
+}
+
+function getMonthLabel(date: Date) {
+  return date.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+}
+
+function getMonthCalendarDays(monthDate: Date) {
+  const year = monthDate.getFullYear();
+  const month = monthDate.getMonth();
+  const firstDayOfMonth = new Date(year, month, 1);
+  const mondayOffset = (firstDayOfMonth.getDay() + 6) % 7;
+  const calendarStart = new Date(year, month, 1 - mondayOffset);
+
+  return Array.from({ length: 42 }, (_, index) => {
+    const date = new Date(calendarStart);
+    date.setDate(calendarStart.getDate() + index);
+
+    return {
+      date,
+      dateValue: getDateValueFromDate(date),
+      isCurrentMonth: date.getMonth() === month,
+      dayNumber: date.getDate(),
+    };
+  });
 }
 
 const CARS_FORMULAS = {
@@ -29,7 +59,7 @@ const CARS_FORMULAS = {
         vehicle: "Citadine",
         price: "49€",
         exterior: ["PRELAVAGE MOUSSE ACTIVE", "LAVAGE MANUEL & HAUTE PRESSION", "NETTOYAGE DES JANTES (EN SURFACE)", "NETTOYAGE ET DEGRAISSAGE DES PNEUMATIQUES", "SÉCHAGE"],
-        interior: ["ASPIRATION SIEGES /TAPIS / MOQUETTES", "DÉPOUSSIÉRAge COMPLET HABITACLE", "NETTOYAGE PLASTIQUES & VINYLES", "NETTOYAGE DES SURFACES VITREES"]
+        interior: ["ASPIRATION SIEGES /TAPIS / MOQUETTES", "DÉPOUSSIÉRAGE COMPLET HABITACLE", "NETTOYAGE PLASTIQUES & VINYLES", "NETTOYAGE DES SURFACES VITREES"]
       },
       {
         vehicle: "Compact",
@@ -152,6 +182,8 @@ function App() {
   const [bookedTimes, setBookedTimes] = useState<string[]>([]);
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [adminSelectedDate, setAdminSelectedDate] = useState(getDateValue(0));
+  const [adminCalendarMonth, setAdminCalendarMonth] = useState(() => new Date());
 
   const getErrorMessage = (error: unknown) => {
     if (error instanceof Error) {
@@ -241,6 +273,15 @@ function App() {
   const selectedDateLabel = formData.date
     ? formatDate(formData.date, { weekday: 'long', day: '2-digit', month: 'long' })
     : '';
+  const adminCalendarDays = getMonthCalendarDays(adminCalendarMonth).map((day) => {
+    const dayReservations = reservations.filter((reservation) => reservation.date === day.dateValue);
+
+    return {
+      ...day,
+      count: dayReservations.length,
+    };
+  });
+  const selectedAdminReservations = reservations.filter((reservation) => reservation.date === adminSelectedDate);
 
   return (
     <div className="App">
@@ -623,7 +664,8 @@ function App() {
                         ) : null}
                       </div>
                     </div>
-                    <button type="submit" className="magnetic-btn booking-submit">CONFIRMER LA SESSION</button>
+                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                    <button type="submit" className="magnetic-btn booking-submit" >CONFIRMER LA SESSION</button></div>
                   </form>
                 )}
               </div>
@@ -680,8 +722,71 @@ function App() {
             </div>
           </div>
 
+          <div className="admin-calendar-panel">
+            <div className="admin-calendar-heading">
+              <div>
+                <span className="booking-kicker">Calendrier</span>
+                <h3>{getMonthLabel(adminCalendarMonth)}</h3>
+              </div>
+              <div className="admin-month-controls">
+                <button
+                  type="button"
+                  onClick={() => setAdminCalendarMonth(new Date(adminCalendarMonth.getFullYear(), adminCalendarMonth.getMonth() - 1, 1))}
+                >
+                  ‹
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    const today = new Date();
+                    setAdminCalendarMonth(today);
+                    setAdminSelectedDate(getDateValueFromDate(today));
+                  }}
+                >
+                  Aujourd'hui
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setAdminCalendarMonth(new Date(adminCalendarMonth.getFullYear(), adminCalendarMonth.getMonth() + 1, 1))}
+                >
+                  ›
+                </button>
+              </div>
+              <div className="admin-day-count">
+                <strong>{selectedAdminReservations.length}</strong>
+                <span>rdv ce jour</span>
+              </div>
+            </div>
+
+            <div className="admin-month-weekdays">
+              {WEEK_DAYS.map((day) => (
+                <span key={day}>{day}</span>
+              ))}
+            </div>
+
+            <div className="admin-month-grid" aria-label="Calendrier des rendez-vous">
+              {adminCalendarDays.map((day) => (
+                <button
+                  key={day.dateValue}
+                  type="button"
+                  className={`admin-month-day ${adminSelectedDate === day.dateValue ? 'active' : ''} ${day.isCurrentMonth ? '' : 'outside'}`}
+                  onClick={() => setAdminSelectedDate(day.dateValue)}
+                >
+                  <strong>{day.dayNumber}</strong>
+                  <span>{formatDate(day.dateValue, { month: 'short' })}</span>
+                  {day.count > 0 ? <em>{day.count}</em> : null}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="admin-list-title">
+            <span>Rendez-vous du jour</span>
+            <strong>{selectedAdminReservations.length}</strong>
+          </div>
+
           <div className="admin-list">
-            {reservations.map((res, i) => (
+            {selectedAdminReservations.length > 0 ? selectedAdminReservations.map((res, i) => (
               <button key={res.id || i} type="button" className="admin-row" onClick={() => setSelectedReservation(res)}>
                 <div className="admin-client">
                   <div>{res.name}</div>
@@ -691,7 +796,11 @@ function App() {
                 <div className="admin-date">{res.phone}</div>
                 <div className="admin-time">{res.time}</div>
               </button>
-            ))}
+            )) : (
+              <div className="admin-empty-day">
+                Aucun rendez-vous pour cette date.
+              </div>
+            )}
           </div>
 
           {selectedReservation ? (
